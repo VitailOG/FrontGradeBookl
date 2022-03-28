@@ -1,5 +1,6 @@
 <template>
   <v-container class="wrapper" fill-height>
+    <SnackBar/>
     <v-sheet outlined rounded>
       <v-card outlined>
         <v-card-title>
@@ -14,24 +15,32 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex'
+
 import axios from 'axios'
+import SnackBar from "../../components/Common/UI/SnackBar";
 import LoginForm from "../../components/Login/LoginForm";
 
 export default {
   name: "Login",
   components:{
-    LoginForm
+    LoginForm,
+    SnackBar
   },
   methods:{
+    ...mapActions(['actionOpenSnack']),
     clickLogin(data){
       console.log(data)
       const dataLogin = {
         username: data.username,
         password: data.password
       }
-      axios.post('http://192.168.0.102:8000/auth/api/token/', dataLogin)
+      axios.post('http://192.168.0.101:8000/auth/api/token/', dataLogin)
         .then(response => {
-          console.log(response.data.student_id)
+          if (response.data.status_code === 401){
+            const info = {'text':response.data.message, 'color':'red'}
+            this.actionOpenSnack(info)
+          }
           localStorage.setItem('refresh', response.data.refresh)
           localStorage.setItem('access', response.data.access)
           localStorage.setItem('permission', response.data.permission)
@@ -43,6 +52,8 @@ export default {
         })
         .catch(error => {
           console.log(error)
+          const info = {'text':'Помилка в авторизація', 'color':'red'}
+          this.actionOpenSnack(info)
         })
         this.username = this.password = ''
     }

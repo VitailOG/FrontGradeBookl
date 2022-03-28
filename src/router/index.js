@@ -48,7 +48,7 @@ const routes = [
     component: () => import('../pages/Methodist/Groups')
   },
   {
-    path: '/rating-list/:id',
+    path: '/rating-list/:id/:semester',
     name: 'rating_list',
     component: () => import('../pages/Methodist/RatingList')
   },
@@ -58,7 +58,7 @@ const routes = [
     component: () => import('../pages/Methodist/YearRating')
   },
   {
-    path:'/student/:id',
+    path:'/student/:id/:educational_program_id',
     name:'student',
     component: () => import('../pages/Methodist/PersonalStudent')
   },

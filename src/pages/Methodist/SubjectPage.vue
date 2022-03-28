@@ -50,6 +50,16 @@
               >
               </v-select>
               <v-select
+                v-model="filterData.educational_program"
+                :items="getPrograms"
+                item-value="id"
+                item-text="name"
+                label="Освітня програма"
+                hide-details
+                class="filterFilds"
+              >
+              </v-select>
+              <v-select
                 :items="teachers"
                 v-model="filterData.teachers"
                 item-value="id"
@@ -131,6 +141,7 @@
             </p>
           </td>
           <td v-if="showHeaders.some(obj => obj.text === 'Група')">{{ row.item.group.name }}</td>
+          <td v-if="showHeaders.some(obj => obj.text === 'Освітня програма')">{{ row.item.educational_program.name }}</td>
           <td v-if="showHeaders.some(obj => obj.text === 'Кількість годин')">{{ row.item.hours }}</td>
           <td v-if="showHeaders.some(obj => obj.text === 'Кількість кредитів')">{{ row.item.loans }}</td>
           <td v-if="showHeaders.some(obj => obj.text === 'Початковий семестр')">{{ row.item.semester }}</td>
@@ -157,6 +168,7 @@
                 <v-btn class="success" @click="openModalForChange(
                     row.item.id,
                     row.item.group,
+                    row.item.educational_program.id,
                     row.item.teachers,
                     row.item.name_subject,
                     row.item.hours,
@@ -250,6 +262,14 @@
               v-model="selectedSubject.hours"
           >
           </v-text-field>
+          <v-select
+            label="Освітня програма"
+            v-model="selectedSubject.educational_program"
+            :items="getPrograms"
+            item-value="id"
+            item-text="name"
+          >
+          </v-select>
           <v-select
             label="Група"
             v-model="selectedSubject.group"
@@ -356,7 +376,8 @@ export default {
       group:'',
       teachers:[],
       first_semestr: '',
-      final_semester:''
+      final_semester:'',
+      educational_program:''
     },
     selectedSubject:{
       name:'',
@@ -367,7 +388,8 @@ export default {
       last_semestr:null,
       finallySubject:false,
       form_of_control:'',
-      link_to_Moodle:''
+      link_to_Moodle:'',
+      educational_program:''
     },
     name_subjects:[],
     idSubject:null,
@@ -389,6 +411,7 @@ export default {
       {text:'Назва предмета', value:'name_subject'},
       {text:'Вчителі', value:'teachers'},
       {text:'Група', value:'group__name'},
+      {text:'Освітня програма', value:'educational_program'},
       {text:'Кількість годин', value:'hours'},
       {text:'Кількість кредитів', value:'loans'},
       {text:'Початковий семестр', value:'semester'},
@@ -403,13 +426,13 @@ export default {
   mounted() {
     this.getListSubject(0)
     this.actionGetGroup()
+    this.actionGetPrograms()
     this.getData()
     this.getNameSubject()
-    // this.selectedHeaders = JSON.parse(localStorage.getItem('headers')).length > 0 ? JSON.parse(localStorage.getItem('headers')) : this.headers
     this.selectedHeaders = this.headers
   },
   computed:{
-    ...mapGetters(['getGroups']),
+    ...mapGetters(['getGroups', 'getPrograms']),
     semesterFirst(){
       if (this.selectedSubject.last_semestr != null){
         return this.semester.slice(0, this.selectedSubject.last_semestr)
@@ -450,7 +473,7 @@ export default {
     }
   },
   methods:{
-    ...mapActions(['actionGetGroup', 'actionOpenSnack', 'actionOpenModal', 'actionCloseModal']),
+    ...mapActions(['actionGetGroup', 'actionOpenSnack', 'actionOpenModal', 'actionCloseModal', 'actionGetPrograms']),
     getNameSubject(){
       http.get('/methodist/subject/names-subjects/')
         .then(response => {
@@ -479,6 +502,7 @@ export default {
       this.selectedSubject.form_of_control = ''
       this.selectedSubject.hours = null
       this.selectedSubject.group = ''
+      this.selectedSubject.educational_program = ''
       this.selectedSubject.first_semestr = null
       this.selectedSubject.last_semestr = null
       this.selectedSubject.link_to_Moodle = ''
@@ -495,6 +519,7 @@ export default {
           teachers:localStorage.getItem('teachers') ? JSON.parse(localStorage.getItem('teachers')) : [],
           semester:localStorage.getItem('first_semester') ? localStorage.getItem('first_semester') : '',
           final_semester:localStorage.getItem('final_semester') ? localStorage.getItem('final_semester') : '',
+          educational_program:localStorage.getItem('educational_program') ? localStorage.getItem('educational_program') : '',
           ordering:localStorage.getItem('sort') ? localStorage.getItem('sort') : 'fat'
         }})
         .then(response => {
@@ -523,6 +548,7 @@ export default {
         url_on_moodle: this.selectedSubject.link_to_Moodle,
         finally_subject: this.selectedSubject.finallySubject,
         group: this.selectedSubject.group,
+        educational_program: this.selectedSubject.educational_program,
         teachers: this.selectedSubject.teachers
       }
       this.loading = true
@@ -560,7 +586,7 @@ export default {
           console.log(error)
         })
     },
-    openModalForChange(id, group, teachers, name_subject, hours, semester, final_semester, form_of_control, finallySubject, url){
+    openModalForChange(id, group, educational_program, teachers, name_subject, hours, semester, final_semester, form_of_control, finallySubject, url){
       this.cleanForm()
       this.changeModal = true
       this.showDialog = true
@@ -574,6 +600,7 @@ export default {
       this.selectedSubject.hours = hours
       this.selectedSubject.link_to_Moodle = url
       this.selectedSubject.first_semestr = semester
+      this.selectedSubject.educational_program = educational_program
       this.selectedSubject.last_semestr = final_semester
       this.selectedSubject.form_of_control = form_of_control
       this.selectedSubject.finallySubject = finallySubject
@@ -587,6 +614,7 @@ export default {
         form_of_control: this.selectedSubject.form_of_control,
         url_on_moodle: this.selectedSubject.link_to_Moodle,
         finally_subject: this.selectedSubject.finallySubject,
+        educational_program: this.selectedSubject.educational_program,
         group: this.selectedSubject.group,
         teachers: this.selectedSubject.teachers
       }
@@ -608,8 +636,8 @@ export default {
           this.listSubject[index].name_subject = response.data.name_subject
           this.listSubject[index].url_on_moodle = response.data.url_on_moodle
           this.listSubject[index].form_of_control = response.data.form_of_control
+          this.listSubject[index].educational_program = response.data.educational_program
           this.listSubject[index].teachers = response.data.teachers
-
 
           this.cleanForm()
           this.loading = false
@@ -675,6 +703,13 @@ export default {
         localStorage.setItem('final_semester', '')
       } else {
         localStorage.setItem('final_semester', val)
+      }
+    },
+    'filterData.educational_program'(val){
+      if (val === null){
+        localStorage.setItem('educational_program', '')
+      } else {
+        localStorage.setItem('educational_program', val)
       }
     },
     sortDesc(val){

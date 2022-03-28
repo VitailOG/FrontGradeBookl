@@ -138,8 +138,8 @@
         <tr>
           <td>{{row.item.id}}</td>
           <td v-if="showHeaders.some(obj => obj.text === 'Прізвище')">
-            <router-link :to="{name:'student', params:{id:row.item.id}}">
-              {{row.item.user.last_name}}
+            <router-link :to="{name:'student', params:{id:row.item.id, educational_program_id:row.item.educational_program.id}}">
+              {{ row.item.user.last_name }}
             </router-link>
           </td>
           <td v-if="showHeaders.some(obj => obj.text === 'Ім\'я')">{{row.item.user.first_name}}</td>

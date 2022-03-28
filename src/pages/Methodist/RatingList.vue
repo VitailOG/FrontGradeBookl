@@ -94,6 +94,7 @@ export default {
   }),
   mounted() {
     this.listRating()
+    console.log(this.$route)
   },
   methods:{
     closeExtraRating(){

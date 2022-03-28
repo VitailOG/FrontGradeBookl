@@ -83,6 +83,7 @@
     </v-dialog>
     <h1 class="black--text mt-3" align="center">Без групи</h1>
     <v-data-table
+      hide-default-footer
       :headers="headers"
       :items="listStudent"
     >
@@ -98,6 +99,9 @@
             </v-btn>
           </td>
         </tr>
+      </template>
+      <template v-slot:no-data>
+        <p>Поки немає даних</p>
       </template>
     </v-data-table>
     <SnackBar/>
@@ -125,10 +129,10 @@ export default {
     formProgram:'',
     date:'',
     headers:[
-      {text:'ID', value:'id'},
-      {text:'Surname', value:'surname'},
-      {text:'Firstname', value:'firstname'},
-      {text:'Lastname', value:'lastname'},
+      {text:'ID', value:'id', sortable:false},
+      {text:'Surname', value:'surname', sortable:false},
+      {text:'Firstname', value:'firstname', sortable:false},
+      {text:'Lastname', value:'lastname', sortable:false},
       {text:'Дія', value:'move'},
     ]
   }),

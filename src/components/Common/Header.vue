@@ -4,17 +4,32 @@
       <v-container style="max-width: 1460px; display: flex">
       <v-app-bar-nav-icon>test</v-app-bar-nav-icon>
       <v-spacer></v-spacer>
-      <div v-if="auth">
+      <div v-if="auth === 'Методист'" class="mt-2">
         <router-link to="/subjects" class="router">Предмети</router-link>
         <router-link to="/students" class="router">Студенти</router-link>
         <router-link to="/group" class="router">Групи</router-link>
         <router-link to="/without-group" class="router">Без групи</router-link>
+        <router-link to="/log-in" class="router">
+          <v-btn class="success" @click="logout">
+            Вийти
+          </v-btn>
+        </router-link>
       </div>
-      <router-link to="/log-in" class="router">
-        <v-btn class="success" @click="logout">
-          Вийти
-        </v-btn>
-      </router-link>
+<!--        <router-link to="/log-in" class="router">-->
+<!--          <v-btn class="success" @click="logout">-->
+<!--            Вийти-->
+<!--          </v-btn>-->
+<!--        </router-link>-->
+      <div v-else-if="auth === 'Студент'">
+        <router-link to="/">
+          Студент
+        </router-link>
+        <router-link to="/log-in" class="router">
+          <v-btn class="success" @click="logout">
+            Вийти
+          </v-btn>
+        </router-link>
+      </div>
       </v-container>
     </v-toolbar>
   </nav>
@@ -34,7 +49,7 @@ export default {
   computed:{
     auth(){
       this.index++
-      return localStorage.getItem('permission') === 'Методист'
+      return localStorage.getItem('permission')
     }
   },
   methods:{

@@ -22,6 +22,9 @@
               <v-tab>
                 Річні оцінки
               </v-tab>
+              <v-tab>
+                Додаткові бали
+              </v-tab>
           </v-tabs>
         </template>
         <v-tabs-items
@@ -70,6 +73,16 @@
                   <td>{{ row.item.rating_set.length ?  row.item.rating_set[0].date_rating : '-' }}</td>
                   <td>{{ row.item.form_of_control }}</td>
                   <td>{{ row.item.rating_set.length ?  row.item.rating_set[0].teacher.fio  : '-' }}</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>Загальний бал</td>
+                  <td>{{ total_rating }}</td>
                 </tr>
               </template>
               <template v-slot:no-data>
@@ -126,6 +139,24 @@
               </template>
             </v-data-table>
           </v-tab-item>
+          <v-tab-item>
+            <v-data-table
+              :items="extra_data"
+              :headers="headersForExtra"
+              hide-default-footer
+            >
+              <template v-slot:item="row">
+                <tr>
+                  <td>{{ row.item.id }}</td>
+                  <td>{{ row.item.point }}</td>
+                  <td>{{ row.item.text }}</td>
+                </tr>
+              </template>
+              <template v-slot:no-data>
+                <p>Поки немає даних</p>
+              </template>
+            </v-data-table>
+          </v-tab-item>
         </v-tabs-items>
       </v-card>
     </v-container>
@@ -142,16 +173,23 @@ export default {
     semesters:[],
     selectSemester:null,
     listPersonalData:[],
+    extra_data:[],
+    total_rating:null,
     headers:[
-      { text: 'Предмет', value: 'subject'},
-      { text: 'Оцінка 5', value: 'rating_5'},
-      { text: 'Оцінка 12', value: 'rating_12'},
-      { text: 'Перездача', value: 'retransmission'},
-      { text: 'Зараховано', value: 'credited'},
-      { text: 'Дата', value: 'data'},
-      { text: 'Форма контроля', value: 'form_of_control'},
-      { text: 'Викладач', value: 'teacher'}
+      { text: 'Предмет', value: 'subject', sortable:false},
+      { text: 'Оцінка 5', value: 'rating_5', sortable:false},
+      { text: 'Оцінка 12', value: 'rating_12', sortable:false},
+      { text: 'Перездача', value: 'retransmission', sortable:false},
+      { text: 'Зараховано', value: 'credited', sortable:false},
+      { text: 'Дата', value: 'data', sortable:false},
+      { text: 'Форма контроля', value: 'form_of_control', sortable:false},
+      { text: 'Викладач', value: 'teacher', sortable:false}
     ],
+    headersForExtra:[
+      { text: 'ID', value: 'id', sortable:false},
+      { text: 'Бал', value: 'point', sortable:false},
+      { text: 'Текст', value: 'text', sortable:false},
+    ]
   }),
   mounted() {
     this.getSemester()
@@ -160,10 +198,10 @@ export default {
     getSemester(){
       http.get('/student/semesters/', {params:{student_id:this.$route.params.id}})
         .then(response => {
+          console.log(response)
           response.data.semesters.map(i => {
             this.semesters.push(i)
           })
-          // this.selectSemester = response.data.last_semester
           this.selectSemester = this.semesters[0]
         })
         .catch(error => {
@@ -173,11 +211,13 @@ export default {
   },
   watch:{
     selectSemester(val){
-      http.get(`/student/detail/`, {params:{semester:val, student_id:this.$route.params.id}})
+      http.get(`/student/detail/`, {params:{semester:val, student_id:this.$route.params.id, educational_program_id:this.$route.params.educational_program_id}})
           .then(response => {
             console.log(response.data)
             this.index++
-            this.listPersonalData = response.data
+            this.extra_data = response.data.extra_points
+            this.total_rating = response.data.total_rating
+            this.listPersonalData = response.data.ratings
           })
           .catch(error => {
             console.log(error)

@@ -173,7 +173,7 @@ export default {
   },
   watch:{
     selectSemester(val){
-      http.get(`/student/detail/`, {params:{semester:val, student_id:this.$route.params.id}})
+      http.get(`/student/detail/`, {params:{semester:val}})
           .then(response => {
             console.log(response.data)
             this.index++
