@@ -18,14 +18,14 @@
               item-text="name"
           >
           </v-select>
-          <v-select
-              label="Освітня програма"
-              v-model="formProgram"
-              :items="getPrograms"
-              item-value="id"
-              item-text="name"
-          >
-          </v-select>
+<!--          <v-select-->
+<!--              label="Освітня програма"-->
+<!--              v-model="formProgram"-->
+<!--              :items="getPrograms"-->
+<!--              item-value="id"-->
+<!--              item-text="name"-->
+<!--          >-->
+<!--          </v-select>-->
           <v-select
               v-model="formEduction"
               label="Форма навчання"
@@ -43,7 +43,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                   v-model="date"
-                  label="Дата народження"
+                  label="Дата вступу"
                   readonly
                   v-bind="attrs"
                   v-on="on"
@@ -149,7 +149,6 @@ export default {
     saveDate(){
       const dataForm = {
         group: this.formGroup,
-        educational_program: this.formProgram,
         form_education: this.formEduction,
         year_entry: this.date
       }

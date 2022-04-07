@@ -9,7 +9,7 @@
         <router-link to="/students" class="router">Студенти</router-link>
         <router-link to="/group" class="router">Групи</router-link>
         <router-link to="/without-group" class="router">Без групи</router-link>
-        <router-link to="/log-in" class="router">
+        <router-link to="/" class="router">
           <v-btn class="success" @click="logout">
             Вийти
           </v-btn>
@@ -21,10 +21,10 @@
 <!--          </v-btn>-->
 <!--        </router-link>-->
       <div v-else-if="auth === 'Студент'">
-        <router-link to="/">
+        <router-link to="/asd">
           Студент
         </router-link>
-        <router-link to="/log-in" class="router">
+        <router-link to="/" class="router">
           <v-btn class="success" @click="logout">
             Вийти
           </v-btn>

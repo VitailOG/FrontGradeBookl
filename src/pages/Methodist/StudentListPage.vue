@@ -234,14 +234,14 @@
               item-text="name"
           >
           </v-select>
-          <v-select
-              label="Освітня програма"
-              v-model="activeData.educational_program"
-              :items="getPrograms"
-              item-value="id"
-              item-text="name"
-          >
-          </v-select>
+<!--          <v-select-->
+<!--              label="Освітня програма"-->
+<!--              v-model="activeData.educational_program"-->
+<!--              :items="getPrograms"-->
+<!--              item-value="id"-->
+<!--              item-text="name"-->
+<!--          >-->
+<!--          </v-select>-->
           <v-select
               v-model="activeData.form_education"
               label="Форма навчання"
@@ -454,7 +454,6 @@ export default {
       const dataChange = {
         group: this.activeData.group,
         form_education: this.activeData.form_education,
-        educational_program: this.activeData.educational_program,
         year_entry: this.activeData.year_entry
       }
       this.loading = true

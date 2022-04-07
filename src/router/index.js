@@ -7,7 +7,7 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path:'/log-in',
+    path:'/',
     name:'login',
     component: Login
   },
@@ -61,6 +61,11 @@ const routes = [
     path:'/student/:id/:educational_program_id',
     name:'student',
     component: () => import('../pages/Methodist/PersonalStudent')
+  },
+  {
+    path:'/common-rating/:id',
+    name:'common_rating',
+    component: () => import('../pages/Methodist/CommonRating')
   },
   {
     path: '/personal/student/:id',

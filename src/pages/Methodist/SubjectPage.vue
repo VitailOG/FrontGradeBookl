@@ -32,6 +32,7 @@
               <v-autocomplete
                 :items="name_subjects"
                 v-model="filterData.name_subject"
+                v-debounce:300ms="getSubject"
                 label="Назва предмета"
                 hide-details
                 item-text="name_subject"
@@ -262,14 +263,14 @@
               v-model="selectedSubject.hours"
           >
           </v-text-field>
-          <v-select
-            label="Освітня програма"
-            v-model="selectedSubject.educational_program"
-            :items="getPrograms"
-            item-value="id"
-            item-text="name"
-          >
-          </v-select>
+<!--          <v-select-->
+<!--            label="Освітня програма"-->
+<!--            v-model="selectedSubject.educational_program"-->
+<!--            :items="getPrograms"-->
+<!--            item-value="id"-->
+<!--            item-text="name"-->
+<!--          >-->
+<!--          </v-select>-->
           <v-select
             label="Група"
             v-model="selectedSubject.group"
@@ -428,7 +429,7 @@ export default {
     this.actionGetGroup()
     this.actionGetPrograms()
     this.getData()
-    this.getNameSubject()
+    // this.getNameSubject()
     this.selectedHeaders = this.headers
   },
   computed:{
@@ -474,17 +475,31 @@ export default {
   },
   methods:{
     ...mapActions(['actionGetGroup', 'actionOpenSnack', 'actionOpenModal', 'actionCloseModal', 'actionGetPrograms']),
-    getNameSubject(){
-      http.get('/methodist/subject/names-subjects/')
-        .then(response => {
-          response.data.map(i => {
-            this.name_subjects.push(i)
-          })
-        })
-        .catch(error => {
-          console.log(error)
-        })
+    getSubject(val){
+      this.name_subjects = []
+      if (val.length > 0){
+        http.get('/methodist/subject/names-subjects/')
+            .then(response => {
+              response.data.map(i => {
+                this.name_subjects.push(i)
+              })
+            })
+            .catch(error => {
+              console.log(error)
+            })
+      }
     },
+    // getNameSubject(){
+    //   http.get('/methodist/subject/names-subjects/')
+    //     .then(response => {
+    //       response.data.map(i => {
+    //         this.name_subjects.push(i)
+    //       })
+    //     })
+    //     .catch(error => {
+    //       console.log(error)
+    //     })
+    // },
     changeItems(limit){
       localStorage.setItem('limit', limit)
       localStorage.setItem('currentPage', 0)
@@ -512,6 +527,8 @@ export default {
       this.loading = true
       this.itemsPerPage = parseInt(localStorage.getItem('limit')) ||  5
       this.page = parseInt(localStorage.getItem('currentPage')) ||  0
+      console.log('itemsPerPage', this.itemsPerPage)
+      console.log('page', this.page)
       this.filterData.name_subject = localStorage.getItem('name_subject') ? localStorage.getItem('name_subject') : ''
       http.get(`/methodist/subject/?offset=${this.page}&limit=${this.itemsPerPage}`, {params:{
           subject:localStorage.getItem('name_subject') ? localStorage.getItem('name_subject') : '',
@@ -519,7 +536,6 @@ export default {
           teachers:localStorage.getItem('teachers') ? JSON.parse(localStorage.getItem('teachers')) : [],
           semester:localStorage.getItem('first_semester') ? localStorage.getItem('first_semester') : '',
           final_semester:localStorage.getItem('final_semester') ? localStorage.getItem('final_semester') : '',
-          educational_program:localStorage.getItem('educational_program') ? localStorage.getItem('educational_program') : '',
           ordering:localStorage.getItem('sort') ? localStorage.getItem('sort') : 'fat'
         }})
         .then(response => {
@@ -548,7 +564,6 @@ export default {
         url_on_moodle: this.selectedSubject.link_to_Moodle,
         finally_subject: this.selectedSubject.finallySubject,
         group: this.selectedSubject.group,
-        educational_program: this.selectedSubject.educational_program,
         teachers: this.selectedSubject.teachers
       }
       this.loading = true
@@ -660,10 +675,11 @@ export default {
         this.disableSemester = true
         this.disableFinishSubject = true
         this.selectedSubject.last_semestr = null
-        this.selectedSubject.finallySubject = false
+        this.selectedSubject.finallySubject = true
       } else {
         this.disableSemester = false
         this.disableFinishSubject = false
+        this.selectedSubject.finallySubject = false
       }
     },
     page(val){
@@ -719,7 +735,7 @@ export default {
       localStorage.setItem('sort', this.sortBy)
       this.page = 0
       this.getListSubject(0)
-    }
+    },
   }
 }
 </script>
