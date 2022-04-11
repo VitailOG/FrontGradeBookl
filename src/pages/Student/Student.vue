@@ -74,21 +74,15 @@
                   <td>{{ row.item.form_of_control }}</td>
                   <td>{{ row.item.rating_set.length ?  row.item.rating_set[0].teacher.fio  : '-' }}</td>
                 </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>Загальний бал</td>
-                  <td>{{ total_rating }}</td>
-                </tr>
               </template>
               <template v-slot:no-data>
                 <p>Поки немає даних</p>
               </template>
             </v-data-table>
+            <v-divider></v-divider>
+            <tr style="float: right; margin-right: 70px; margin-top: 10px; margin-bottom: 10px;">
+              <td>Загальний бал {{ total_rating }}</td>
+            </tr>
           </v-tab-item>
           <v-tab-item>
             <!--            переробити-->

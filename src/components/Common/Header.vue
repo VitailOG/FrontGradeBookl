@@ -2,7 +2,7 @@
   <nav>
     <v-toolbar elevation="2" style="background: #198754">
       <v-container style="max-width: 1460px; display: flex">
-      <v-app-bar-nav-icon>test</v-app-bar-nav-icon>
+      <v-app-bar-nav-icon><v-img src="../../assets/logoGC.png" style="margin-left: 150px" width="180px"></v-img></v-app-bar-nav-icon>
       <v-spacer></v-spacer>
       <div v-if="auth === 'Методист'" class="mt-2">
         <router-link to="/subjects" class="router">Предмети</router-link>
@@ -36,6 +36,7 @@
 </template>
 
 <script>
+
 export default {
   name: "Header",
   props:['index'],

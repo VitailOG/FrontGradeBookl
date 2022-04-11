@@ -2,7 +2,7 @@
   <div>
     <h1 class="black--text mt-3" align="center">Предмети</h1>
     <v-container class="main">
-      <v-icon @click="tab=!tab">
+      <v-icon @click="openModalForFilter">
         mdi-filter
       </v-icon>
       <v-expand-transition>
@@ -41,6 +41,8 @@
               >
               </v-autocomplete>
               <v-select
+                  clear-icon="mdi-close"
+                  clearable
                   v-model="filterData.group"
                   label="Група"
                   :items="getGroups"
@@ -51,6 +53,8 @@
               >
               </v-select>
               <v-select
+                clear-icon="mdi-close"
+                clearable
                 v-model="filterData.educational_program"
                 :items="getPrograms"
                 item-value="id"
@@ -61,6 +65,8 @@
               >
               </v-select>
               <v-select
+                clear-icon="mdi-close"
+                clearable
                 :items="teachers"
                 v-model="filterData.teachers"
                 item-value="id"
@@ -72,6 +78,8 @@
               >
               </v-select>
               <v-select
+                  clear-icon="mdi-close"
+                  clearable
                   v-model="filterData.first_semestr"
                   :items="semester"
                   label="Початковий семестр"
@@ -79,6 +87,8 @@
                   class="filterFilds"
               ></v-select>
               <v-select
+                  clear-icon="mdi-close"
+                  clearable
                   v-model="filterData.final_semester"
                   :items="semester"
                   label="Кінцевий семестр"
@@ -475,6 +485,15 @@ export default {
   },
   methods:{
     ...mapActions(['actionGetGroup', 'actionOpenSnack', 'actionOpenModal', 'actionCloseModal', 'actionGetPrograms']),
+    openModalForFilter(){
+      this.filterData.group = localStorage.getItem('group') ? Number(localStorage.getItem('group')) : ''
+      this.filterData.educational_program = localStorage.getItem('educational_program') ? Number(localStorage.getItem('educational_program')) : ''
+      this.filterData.teachers = localStorage.getItem('teachers') ? JSON.parse(localStorage.getItem('teachers')) : []
+      this.filterData.first_semestr = localStorage.getItem('first_semester') ? Number(localStorage.getItem('first_semester')) : ''
+      this.filterData.final_semester = localStorage.getItem('final_semester') ? Number(localStorage.getItem('final_semester')) : ''
+
+      this.tab = !this.tab
+    },
     getSubject(val){
       this.name_subjects = []
       if (val.length > 0){
@@ -527,19 +546,17 @@ export default {
       this.loading = true
       this.itemsPerPage = parseInt(localStorage.getItem('limit')) ||  5
       this.page = parseInt(localStorage.getItem('currentPage')) ||  0
-      console.log('itemsPerPage', this.itemsPerPage)
-      console.log('page', this.page)
       this.filterData.name_subject = localStorage.getItem('name_subject') ? localStorage.getItem('name_subject') : ''
       http.get(`/methodist/subject/?offset=${this.page}&limit=${this.itemsPerPage}`, {params:{
           subject:localStorage.getItem('name_subject') ? localStorage.getItem('name_subject') : '',
           group:localStorage.getItem('group') ? localStorage.getItem('group') : '',
           teachers:localStorage.getItem('teachers') ? JSON.parse(localStorage.getItem('teachers')) : [],
           semester:localStorage.getItem('first_semester') ? localStorage.getItem('first_semester') : '',
+          educational_program: localStorage.getItem('educational_program') ? localStorage.getItem('educational_program') : '',
           final_semester:localStorage.getItem('final_semester') ? localStorage.getItem('final_semester') : '',
           ordering:localStorage.getItem('sort') ? localStorage.getItem('sort') : 'fat'
         }})
         .then(response => {
-          console.log(response.data)
           this.loading = false
           this.allPages = response.data.count
           this.listSubject = response.data.results
@@ -619,6 +636,7 @@ export default {
       this.selectedSubject.last_semestr = final_semester
       this.selectedSubject.form_of_control = form_of_control
       this.selectedSubject.finallySubject = finallySubject
+      console.log(this.selectedSubject.finallySubject)
     },
     changeSubject(){
       const data = {
@@ -633,6 +651,7 @@ export default {
         group: this.selectedSubject.group,
         teachers: this.selectedSubject.teachers
       }
+      console.log(data)
       this.loading = true
       http.put(`/methodist/subject/${this.idSubject}/`, data)
         .then(response => {
@@ -679,7 +698,7 @@ export default {
       } else {
         this.disableSemester = false
         this.disableFinishSubject = false
-        this.selectedSubject.finallySubject = false
+        // this.selectedSubject.finallySubject = false
       }
     },
     page(val){
@@ -722,6 +741,7 @@ export default {
       }
     },
     'filterData.educational_program'(val){
+      console.log(val)
       if (val === null){
         localStorage.setItem('educational_program', '')
       } else {

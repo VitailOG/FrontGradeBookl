@@ -13,7 +13,7 @@ export default new Vuex.Store({
     color:'',
     visibleModal:false,
     formEductions:['Контрактна', 'Державна'],
-    formGroups:[''],
+    formGroups:[],
     formPrograms:[],
   },
   mutations: {

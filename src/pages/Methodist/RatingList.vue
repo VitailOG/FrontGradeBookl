@@ -147,19 +147,23 @@ export default {
       http.patch(`/methodist/group/update/${this.extra_id}/`, data)
           .then(response => {
             console.log(response)
-            this.button = false
-            this.dialog = false
-            this.list_student.map(i => {
-              i.extra_points_students.map(j => {
-                if (j.id === this.extra_id){
-                  let old_rating = j.point
-                  j.point = this.extra_rating.rating
-                  j.text = this.extra_rating.text
-                  console.log((Number(i.total_rating) - Number(old_rating)) + Number(j.point))
-                  i.total_rating = (Number(i.total_rating) - Number(old_rating)) + Number(j.point)
-                }
+            if (response === undefined){
+              const info = {'text':'Додатковий бал не може бути більше 0.5', 'color':'red'}
+              this.actionOpenSnack(info)
+            } else {
+              this.button = false
+              this.dialog = false
+              this.list_student.map(i => {
+                i.extra_points_students.map(j => {
+                  if (j.id === this.extra_id) {
+                    let old_rating = j.point
+                    j.point = this.extra_rating.rating
+                    j.text = this.extra_rating.text
+                    i.total_rating = (Number(i.total_rating) - Number(old_rating)) + Number(j.point)
+                  }
+                })
               })
-            })
+            }
           })
           .catch(error => {
             console.log(error)
@@ -197,6 +201,8 @@ export default {
       this.extra_rating.text = ''
     },
     openModalExtra(id){
+      this.extra_rating.rating = null
+      this.extra_rating.text = ''
       this.dialog = true
       this.studentId = id
     },

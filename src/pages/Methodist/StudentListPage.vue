@@ -2,7 +2,7 @@
   <div>
     <h1 class="black--text mt-3" align="center">Студенти</h1>
     <v-container class="main">
-    <v-icon @click="tab=!tab">
+    <v-icon @click="openFilterModal">
       mdi-filter
     </v-icon>
     <v-expand-transition>
@@ -49,6 +49,8 @@
             >
             </v-autocomplete>
             <v-select
+              clear-icon="mdi-close"
+              clearable
               label="Група"
               v-model="filterData.group"
               :items="getGroups"
@@ -59,6 +61,8 @@
             >
             </v-select>
             <v-select
+              clear-icon="mdi-close"
+              clearable
               label="Форма навчання"
               v-model="filterData.form_education"
               :items="['Державна', 'Контрактна']"
@@ -67,6 +71,8 @@
             >
             </v-select>
             <v-select
+              clear-icon="mdi-close"
+              clearable
               v-model="filterData.education_program"
               :items="getPrograms"
               label="Освітня програма"
@@ -77,6 +83,8 @@
             >
             </v-select>
             <v-select
+                clear-icon="mdi-close"
+                clearable
                 :items="year"
                 v-model="filterData.start_year"
                 label="Початковий рік"
@@ -86,6 +94,8 @@
                 hide-details
             ></v-select>
             <v-select
+                clear-icon="mdi-close"
+                clearable
                 :items="year"
                 v-model="filterData.last_year"
                 label="Кінцевий рік"
@@ -96,7 +106,7 @@
             ></v-select>
             <v-row>
               <v-col align="center">
-                <v-btn class="success my-4" @click="getStudent(0)">
+                <v-btn class="success my-4" @click="getStudent">
                   Відправити
                 </v-btn>
               </v-col>
@@ -391,6 +401,17 @@ export default {
   },
   methods:{
     ...mapActions(['actionOpenSnack', 'actionOpenModal', 'actionCloseModal', 'actionGetGroup', 'actionGetPrograms']),
+    openFilterModal(){
+      this.filterData.first_name = localStorage.getItem('first_name') ? localStorage.getItem('first_name') : ''
+      this.filterData.last_name = localStorage.getItem('last_name') ? localStorage.getItem('last_name') : ''
+      this.filterData.group = localStorage.getItem('group') ? Number(localStorage.getItem('group')) : ''
+      this.filterData.education_program = localStorage.getItem('educational_program') ? Number(localStorage.getItem('educational_program')) : ''
+      this.filterData.form_education = localStorage.getItem('form_education') ? localStorage.getItem('form_education') : ''
+      this.filterData.start_year = localStorage.getItem('min_year') ? Number(localStorage.getItem('min_year')) : ''
+      this.filterData.last_year = localStorage.getItem('max_year') ? Number(localStorage.getItem('max_year')) : ''
+
+      this.tab = !this.tab
+    },
     getName(val){
       this.first_name_fio = []
       http.get('/methodist/student/names/', {params:{
@@ -438,9 +459,12 @@ export default {
       console.log('data -> ', data)
     },
     changeItems(limit){
-      this.itemsPerPage = limit
-      this.page=0
-      this.getListSubject(0)
+      // this.itemsPerPage = limit
+      // this.page=0
+      localStorage.setItem('limit', limit)
+      localStorage.setItem('currentPage', 0)
+      this.getStudent()
+      // this.getListSubject(0)
     },
     openChangeModel(id, group, form_education, form_control, year_entry){
       this.dialogChange = true
@@ -484,16 +508,25 @@ export default {
       this.actionOpenModal()
       this.id = id
     },
-    getStudent(id){
+    getStudent(){
       this.loading = true
-      http.get(`/methodist/student/?offset=${id}&limit=${this.itemsPerPage}`, {params:{
-          first_name: this.filterData.first_name,
-          last_name: this.filterData.last_name,
-          group: this.filterData.group,
-          educational_program: this.filterData.education_program,
-          form_education: this.filterData.form_education,
-          min_year: this.filterData.start_year,
-          max_year: this.filterData.last_year,
+      this.itemsPerPage = parseInt(localStorage.getItem('limit')) ||  5
+      this.page = parseInt(localStorage.getItem('currentPage')) ||  0
+      http.get(`/methodist/student/?offset=${this.page}&limit=${this.itemsPerPage}`, {params:{
+          // first_name: this.filterData.first_name,
+          // last_name: this.filterData.last_name,
+          // group: this.filterData.group,
+          // educational_program: this.filterData.education_program,
+          // form_education: this.filterData.form_education,
+          // min_year: this.filterData.start_year,
+          // max_year: this.filterData.last_year,
+          first_name: localStorage.getItem('first_name') ? localStorage.getItem('first_name') : '',
+          last_name: localStorage.getItem('last_name') ? localStorage.getItem('last_name') : '',
+          group: localStorage.getItem('group') ? localStorage.getItem('group') : '',
+          educational_program: localStorage.getItem('educational_program') ? localStorage.getItem('educational_program') : '',
+          form_education: localStorage.getItem('form_education') ? localStorage.getItem('form_education') : '',
+          min_year: localStorage.getItem('min_year') ? localStorage.getItem('min_year') : '',
+          max_year: localStorage.getItem('max_year') ? localStorage.getItem('max_year') : '',
           ordering:this.sortBy
         }})
         .then(response => {
@@ -522,7 +555,60 @@ export default {
     },
   },
   watch:{
+    'filterData.last_name'(val){
+      console.log(val)
+      if (val === null){
+        localStorage.setItem('last_name', '')
+      } else {
+        localStorage.setItem('last_name', val)
+      }
+    },
+    'filterData.first_name'(val){
+      if (val === null){
+        localStorage.setItem('first_name', '')
+      } else {
+        localStorage.setItem('first_name', val)
+      }
+    },
+    'filterData.group'(val){
+      if (val === null){
+        localStorage.setItem('group', '')
+      } else {
+        localStorage.setItem('group', val)
+      }
+    },
+    'filterData.education_program'(val){
+      console.log(val)
+      if (val === null){
+        localStorage.setItem('educational_program', '')
+      } else {
+        localStorage.setItem('educational_program', val)
+      }
+    },
+    'filterData.form_education'(val){
+      console.log(val)
+      if (val === null){
+        localStorage.setItem('form_education', '')
+      } else {
+        localStorage.setItem('form_education', val)
+      }
+    },
+    'filterData.start_year'(val){
+      if (val === null){
+        localStorage.setItem('min_year', '')
+      } else {
+        localStorage.setItem('min_year', val)
+      }
+    },
+    'filterData.last_year'(val){
+      if (val === null){
+        localStorage.setItem('max_year', '')
+      } else {
+        localStorage.setItem('max_year', val)
+      }
+    },
     page(val){
+      localStorage.setItem('currentPage', val)
       this.getStudent(val)
     },
     sortDesc(val){

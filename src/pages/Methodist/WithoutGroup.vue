@@ -167,7 +167,7 @@ export default {
           })
       this.formEduction = ''
       this.formGroup = ''
-      this.formProgram = ''
+      this.date = ''
       this.dialog = false
     },
     openDialog(id){

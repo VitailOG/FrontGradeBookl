@@ -35,7 +35,7 @@ export default {
         username: data.username,
         password: data.password
       }
-      axios.post('http://192.168.0.101:8000/auth/api/token/', dataLogin)
+      axios.post('http://192.168.0.103:8000/auth/api/token/', dataLogin)
         .then(response => {
           if (response.data.status_code === 401){
             const info = {'text':response.data.message, 'color':'red'}
