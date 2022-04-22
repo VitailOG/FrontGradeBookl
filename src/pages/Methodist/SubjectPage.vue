@@ -257,9 +257,14 @@
       max-width="430"
     >
       <v-card>
-        <v-card-title class="text-h5">
+
+        <v-card-title class="text-h5" v-if="this.changeModal">
           Редагувати предмет
         </v-card-title>
+        <v-card-title class="text-h5" v-else>
+          Створити предмет
+        </v-card-title>
+
         <v-card-text>
           <v-text-field
             label="Назва предмета"
@@ -273,14 +278,6 @@
               v-model="selectedSubject.hours"
           >
           </v-text-field>
-<!--          <v-select-->
-<!--            label="Освітня програма"-->
-<!--            v-model="selectedSubject.educational_program"-->
-<!--            :items="getPrograms"-->
-<!--            item-value="id"-->
-<!--            item-text="name"-->
-<!--          >-->
-<!--          </v-select>-->
           <v-select
             label="Група"
             v-model="selectedSubject.group"
@@ -486,11 +483,11 @@ export default {
   methods:{
     ...mapActions(['actionGetGroup', 'actionOpenSnack', 'actionOpenModal', 'actionCloseModal', 'actionGetPrograms']),
     openModalForFilter(){
-      this.filterData.group = localStorage.getItem('group') ? Number(localStorage.getItem('group')) : ''
-      this.filterData.educational_program = localStorage.getItem('educational_program') ? Number(localStorage.getItem('educational_program')) : ''
+      this.filterData.group = localStorage.getItem('subject_group') ? Number(localStorage.getItem('subject_group')) : ''
+      this.filterData.educational_program = localStorage.getItem('subject_educational_program') ? Number(localStorage.getItem('subject_educational_program')) : ''
       this.filterData.teachers = localStorage.getItem('teachers') ? JSON.parse(localStorage.getItem('teachers')) : []
-      this.filterData.first_semestr = localStorage.getItem('first_semester') ? Number(localStorage.getItem('first_semester')) : ''
-      this.filterData.final_semester = localStorage.getItem('final_semester') ? Number(localStorage.getItem('final_semester')) : ''
+      this.filterData.first_semestr = localStorage.getItem('subject_first_semester') ? Number(localStorage.getItem('subject_first_semester')) : ''
+      this.filterData.final_semester = localStorage.getItem('subject_final_semester') ? Number(localStorage.getItem('subject_final_semester')) : ''
 
       this.tab = !this.tab
     },
@@ -508,17 +505,6 @@ export default {
             })
       }
     },
-    // getNameSubject(){
-    //   http.get('/methodist/subject/names-subjects/')
-    //     .then(response => {
-    //       response.data.map(i => {
-    //         this.name_subjects.push(i)
-    //       })
-    //     })
-    //     .catch(error => {
-    //       console.log(error)
-    //     })
-    // },
     changeItems(limit){
       localStorage.setItem('limit', limit)
       localStorage.setItem('currentPage', 0)
@@ -549,11 +535,11 @@ export default {
       this.filterData.name_subject = localStorage.getItem('name_subject') ? localStorage.getItem('name_subject') : ''
       http.get(`/methodist/subject/?offset=${this.page}&limit=${this.itemsPerPage}`, {params:{
           subject:localStorage.getItem('name_subject') ? localStorage.getItem('name_subject') : '',
-          group:localStorage.getItem('group') ? localStorage.getItem('group') : '',
+          group:localStorage.getItem('subject_group') ? localStorage.getItem('subject_group') : '',
           teachers:localStorage.getItem('teachers') ? JSON.parse(localStorage.getItem('teachers')) : [],
-          semester:localStorage.getItem('first_semester') ? localStorage.getItem('first_semester') : '',
-          educational_program: localStorage.getItem('educational_program') ? localStorage.getItem('educational_program') : '',
-          final_semester:localStorage.getItem('final_semester') ? localStorage.getItem('final_semester') : '',
+          semester:localStorage.getItem('subject_first_semester') ? localStorage.getItem('subject_first_semester') : '',
+          educational_program: localStorage.getItem('subject_educational_program') ? localStorage.getItem('subject_educational_program') : '',
+          final_semester:localStorage.getItem('subject_final_semester') ? localStorage.getItem('subject_final_semester') : '',
           ordering:localStorage.getItem('sort') ? localStorage.getItem('sort') : 'fat'
         }})
         .then(response => {
@@ -619,6 +605,7 @@ export default {
         })
     },
     openModalForChange(id, group, educational_program, teachers, name_subject, hours, semester, final_semester, form_of_control, finallySubject, url){
+      console.log(name_subject.split(' ').slice(0, -1))
       this.cleanForm()
       this.changeModal = true
       this.showDialog = true
@@ -627,8 +614,8 @@ export default {
         this.selectedSubject.teachers.push(i.id)
       })
       this.idSubject = id
-      this.selectedSubject.group = group.id
-      this.selectedSubject.name = name_subject
+      this.selectedSubject.group = group
+      this.selectedSubject.name = name_subject.split(' ').slice(0, -1).join(' ')
       this.selectedSubject.hours = hours
       this.selectedSubject.link_to_Moodle = url
       this.selectedSubject.first_semestr = semester
@@ -636,11 +623,12 @@ export default {
       this.selectedSubject.last_semestr = final_semester
       this.selectedSubject.form_of_control = form_of_control
       this.selectedSubject.finallySubject = finallySubject
-      console.log(this.selectedSubject.finallySubject)
+      console.log(this.selectedSubject.name + ` (${this.selectedSubject.group.name})`)
+      console.log(this.selectedSubject.group.name)
     },
     changeSubject(){
       const data = {
-        name_subject: this.selectedSubject.name,
+        name_subject: this.selectedSubject.name + ` (${this.selectedSubject.group.name})`,
         hours: this.selectedSubject.hours,
         semester: this.selectedSubject.first_semestr,
         final_semester: this.selectedSubject.last_semestr,
@@ -648,7 +636,7 @@ export default {
         url_on_moodle: this.selectedSubject.link_to_Moodle,
         finally_subject: this.selectedSubject.finallySubject,
         educational_program: this.selectedSubject.educational_program,
-        group: this.selectedSubject.group,
+        group: this.selectedSubject.group.id,
         teachers: this.selectedSubject.teachers
       }
       console.log(data)
@@ -714,9 +702,9 @@ export default {
     },
     'filterData.group'(val){
       if (val === null){
-        localStorage.setItem('group', '')
+        localStorage.setItem('subject_group', '')
       } else {
-        localStorage.setItem('group', val)
+        localStorage.setItem('subject_group', val)
       }
     },
     'filterData.teachers'(val){
@@ -728,24 +716,24 @@ export default {
     },
     'filterData.first_semestr'(val){
       if (val === null){
-        localStorage.setItem('first_semester', '')
+        localStorage.setItem('subject_first_semester', '')
       } else {
-        localStorage.setItem('first_semester', val)
+        localStorage.setItem('subject_first_semester', val)
       }
     },
     'filterData.final_semester'(val){
       if (val === null){
-        localStorage.setItem('final_semester', '')
+        localStorage.setItem('subject_final_semester', '')
       } else {
-        localStorage.setItem('final_semester', val)
+        localStorage.setItem('subject_final_semester', val)
       }
     },
     'filterData.educational_program'(val){
       console.log(val)
       if (val === null){
-        localStorage.setItem('educational_program', '')
+        localStorage.setItem('subject_educational_program', '')
       } else {
-        localStorage.setItem('educational_program', val)
+        localStorage.setItem('subject_educational_program', val)
       }
     },
     sortDesc(val){

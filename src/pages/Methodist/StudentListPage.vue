@@ -11,7 +11,6 @@
           class="filter"
           overlay
           v-if="tab"
-          style="margin-left: 80px"
       >
         <template>
           <v-tabs
@@ -39,6 +38,7 @@
                 hide-details
             >
             </v-autocomplete>
+
             <v-autocomplete
                 :items="first_name_fio"
                 v-model="filterData.first_name"
@@ -48,6 +48,7 @@
                 hide-details
             >
             </v-autocomplete>
+
             <v-select
               clear-icon="mdi-close"
               clearable
@@ -329,8 +330,8 @@ export default {
     year:[],
     filterData:{
       last_name:'',
-      first_name:'',
-      group:'',
+      first_name: localStorage.getItem('first_name') || '',
+      group: localStorage.getItem('group') || '',
       form_education:'',
       education_program:'',
       start_year:'',
@@ -520,6 +521,7 @@ export default {
           // form_education: this.filterData.form_education,
           // min_year: this.filterData.start_year,
           // max_year: this.filterData.last_year,
+
           first_name: localStorage.getItem('first_name') ? localStorage.getItem('first_name') : '',
           last_name: localStorage.getItem('last_name') ? localStorage.getItem('last_name') : '',
           group: localStorage.getItem('group') ? localStorage.getItem('group') : '',
@@ -530,7 +532,6 @@ export default {
           ordering:this.sortBy
         }})
         .then(response => {
-          console.log(response)
           this.allCount = response.data.count
           this.listStudent = response.data.results
           this.loading = false

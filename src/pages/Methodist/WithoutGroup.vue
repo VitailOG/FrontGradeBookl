@@ -18,14 +18,6 @@
               item-text="name"
           >
           </v-select>
-<!--          <v-select-->
-<!--              label="Освітня програма"-->
-<!--              v-model="formProgram"-->
-<!--              :items="getPrograms"-->
-<!--              item-value="id"-->
-<!--              item-text="name"-->
-<!--          >-->
-<!--          </v-select>-->
           <v-select
               v-model="formEduction"
               label="Форма навчання"
@@ -86,6 +78,7 @@
       hide-default-footer
       :headers="headers"
       :items="listStudent"
+      :items-per-page="listStudent.length"
     >
       <template v-slot:item="row">
         <tr>

@@ -61,7 +61,7 @@
       <v-select
           v-model="rating.teacher"
           placeholder="Викладач"
-          :items="teachers"
+          :items="teachersInForm"
           item-text="username"
           item-value="id"
       >
@@ -100,11 +100,23 @@ export default {
       retransmission:false,
       credited:false,
       date:'',
-      teacher:null
+      teacher:null,
+      is_annual_assessment: false
     },
   }),
   mounted() {
     this.listStudent()
+    console.log(this.form_of_control)
+  },
+  computed:{
+    teachersInForm(){
+      if (this.teachers.length === 1){
+        this.rating.teacher = this.teachers[0].id
+        return this.teachers
+      } else {
+        return this.teachers
+      }
+    }
   },
   methods:{
     save (date) {
@@ -112,8 +124,9 @@ export default {
     },
     listStudent(){
       this.ratings.map(i => {
-        console.log(i)
-        if (i.user === this.data.id && i.is_annual_assessment === false){
+        if (i.user === this.data.id &&
+            (['Курсова', 'Практика'].includes(this.form_of_control) || i.is_annual_assessment === false)
+        ){
           this.rating.id = i.id
           this.rating.rating_5 = i.rating_5 === 0 ? null : i.rating_5
           this.rating.rating_12 = i.rating_12
@@ -133,11 +146,12 @@ export default {
         rating_12: this.rating.rating_12,
         retransmission: this.rating.retransmission,
         credited: this.rating.credited,
-        semester: this.semester,
-        teacher:this.rating.teacher,
+        semester: this.$route.params.semester,
+        teacher: this.rating.teacher,
         user: this.data.id,
         subject: this.id
       }
+      console.log(data)
       this.$emit('clickUpdateDataRating', data)
     },
     clickRating(){
@@ -149,12 +163,12 @@ export default {
         retransmission: this.rating.retransmission,
         credited: this.rating.credited,
         semester: this.$route.params.semester,
-        teacher:this.rating.teacher,
+        teacher: this.rating.teacher,
         user: this.data.id,
         subject: this.id,
         is_annual_assessment:false
       }
-      console.log(data)
+      console.log('data -> ',data)
       this.$emit('clickPost', data)
     }
   },

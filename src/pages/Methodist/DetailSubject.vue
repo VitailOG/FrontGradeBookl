@@ -3,7 +3,7 @@
     <v-container style="max-width: 400px; position: relative; float: left; margin-left: 50px">
       <v-list>
         <v-list-item-group v-model="model">
-          <h2 align="left">{{ name_subject }} {{ this.$route.params.id }}</h2>
+          <h2 align="left">{{ name_subject.split(' ').slice(0, -1).join(' ') }} {{ this.$route.params.id }}</h2>
           <v-list-item
               v-for="i in semestrs"
               :key="i"

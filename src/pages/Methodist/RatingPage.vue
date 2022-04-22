@@ -16,6 +16,9 @@
             :teachers="teachers"
             :ratings="ratings"
             :data="row.item"
+
+            :form_of_control="form_of_control"
+
             :key="index"
             :id="$route.params.id"
           />
@@ -48,6 +51,7 @@ export default {
     students:[],
     ratings:[],
     id_subject:null,
+    form_of_control: '',
     headers:[
       {text:'ID', value:'id', sortable:false},
       {text:'Ім\'я', value:'first_name', sortable:false},
@@ -82,12 +86,9 @@ export default {
         })
     },
     getDataForRating(){
-      console.log('semester ', this.$route.params.semester)
-      console.log('id ', this.$route.params.id)
-      // http.get(`/methodist/rating/group/${this.current_subject.id}/${this.semester}/`)
       http.get(`/methodist/rating/group/${this.$route.params.id}/`, {params:{semester:this.$route.params.semester}})
           .then(response => {
-            console.log(response.data.ratings)
+            this.form_of_control = response.data.form_of_control
             response.data.teachers.map(i =>  {
               this.teachers.push(i)
             })
@@ -103,9 +104,10 @@ export default {
           })
     },
     postDataForRating(data){
-      console.log(data)
+      data.is_annual_assessment = ['Курсова', 'Практика'].includes(this.form_of_control) ? true : false
       http.post('/methodist/rating/', data)
           .then(response => {
+            console.log(response.data)
             this.index++
             this.ratings.push(response.data)
             const info = {'text':'Оцінка добавлена', 'color':'green'}

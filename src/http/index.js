@@ -10,6 +10,7 @@ const http = axios.create({
 })
 
 http.interceptors.request.use((config) => {
+    console.log(config)
     if (localStorage.getItem('access')) {
         config.headers.Authorization = `Bearer ${localStorage.getItem('access')}`
     }
@@ -33,7 +34,7 @@ http.interceptors.response.use((config) => {
                 localStorage.removeItem('access')
                 localStorage.removeItem('refresh')
                 localStorage.removeItem('permission')
-                router.push('/log-in')
+                router.push('/')
             }
         }
     }

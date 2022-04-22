@@ -37,12 +37,12 @@
           <td>
             <div v-if="row.item.extra_points_students.length > 0">
               <span v-for="i in row.item.extra_points_students" :key="i.id">
-                <span @click="openActionModal(i.id, i.point, i.text)">{{ i.point }} - {{ i.text }}</span><br>
+                <v-chip class="chip" outlined @click="openActionModal(i.id, i.point, i.text)">{{ i.point }} - {{ i.text }}</v-chip><br>
               </span>
             </div>
             <p v-else>Немає додаткових балів</p>
           </td>
-          <td>{{ row.item.total_rating }}</td>
+          <td>{{ Math.trunc(row.item.total_rating * 100) / 100 }}</td>
           <td>
             <v-btn style="background: #88daff" class="white--text" @click="openModalExtra(row.item.id)">
               Додати додатковий бал
@@ -103,6 +103,7 @@ export default {
   name: "RatingList",
   components: {SnackBar},
   data:() => ({
+    selectedItems:1,
     index:1,
     chexbox:false,
     button:false,
@@ -271,5 +272,8 @@ export default {
     max-width: 1400px;
     margin: 0 auto;
     margin-top: 25px;
+  }
+  .chip{
+    border: 0px white solid !important;
   }
 </style>
