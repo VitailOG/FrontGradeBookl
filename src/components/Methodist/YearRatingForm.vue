@@ -75,7 +75,7 @@
         <v-select
             v-model="rating.teacher"
             placeholder="Викладач"
-            :items="teachers"
+            :items="teachersInForm"
             item-text="username"
             item-value="id"
         >
@@ -121,6 +121,16 @@ export default {
   }),
   mounted() {
     this.listStudent()
+  },
+  computed:{
+    teachersInForm(){
+      if (this.teachers.length === 1){
+        this.rating.teacher = this.teachers[0].id
+        return this.teachers
+      } else {
+        return this.teachers
+      }
+    }
   },
   methods:{
     save (date) {

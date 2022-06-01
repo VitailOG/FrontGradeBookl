@@ -5,9 +5,10 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import vueDebounce from 'vue-debounce'
 import axios from 'axios'
+import baseUrl from './http/urls'
 
-
-axios.defaults.baseURL = 'http://192.168.0.101:8000'
+// axios.defaults.baseURL = 'http://192.168.0.104:8000'
+axios.defaults.baseURL = baseUrl
 Vue.config.productionTip = false
 
 Vue.use(vueDebounce)

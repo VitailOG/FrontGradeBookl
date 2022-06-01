@@ -573,7 +573,7 @@ export default {
       http.post('/methodist/subject/', data)
         .then(response => {
           this.allPages += 1
-          this.listSubject.push(response.data)
+          this.listSubject.unshift(response.data)
           this.loading = false
           this.cleanForm()
           this.showDialog = false

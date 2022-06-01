@@ -88,7 +88,7 @@
 
 export default {
   name: "FormRating",
-  props: ['data', 'ratings', 'teachers', 'index', 'id'],
+  props: ['data', 'ratings', 'teachers', 'index', 'id', 'form_of_control'],
   data:() => ({
     menu:false,
     activePicker: null,
@@ -124,6 +124,7 @@ export default {
     },
     listStudent(){
       this.ratings.map(i => {
+        console.log('asdads')
         if (i.user === this.data.id &&
             (['Курсова', 'Практика'].includes(this.form_of_control) || i.is_annual_assessment === false)
         ){

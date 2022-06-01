@@ -207,7 +207,6 @@ export default {
     selectSemester(val){
       http.get(`/student/detail/`, {params:{semester:val}})
           .then(response => {
-            console.log(response.data)
             this.index++
             this.extra_data = response.data.extra_points
             this.total_rating = response.data.total_rating

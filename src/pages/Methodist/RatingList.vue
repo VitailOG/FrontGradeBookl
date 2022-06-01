@@ -42,7 +42,8 @@
             </div>
             <p v-else>Немає додаткових балів</p>
           </td>
-          <td>{{ Math.trunc(row.item.total_rating * 100) / 100 }}</td>
+<!--          <td>{{ Math.trunc(row.item.total_rating * 100) / 100 }}</td>-->
+          <td>{{ row.item.total_rating }}</td>
           <td>
             <v-btn style="background: #88daff" class="white--text" @click="openModalExtra(row.item.id)">
               Додати додатковий бал
@@ -94,6 +95,7 @@
 </template>
 
 <script>
+
 import {mapActions} from 'vuex'
 import http from "../../http/index";
 

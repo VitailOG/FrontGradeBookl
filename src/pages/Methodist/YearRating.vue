@@ -26,16 +26,19 @@
         </template>
       </v-data-table>
     </v-container>
+    <SnackBar/>
   </div>
 </template>
 
 <script>
 import YearRatingForm from "../../components/Methodist/YearRatingForm";
+import SnackBar from "@/components/Common/UI/SnackBar";
 import http from "../../http/index";
+import {mapActions} from "vuex";
 
 export default {
   name: "YearRating",
-  components:{YearRatingForm},
+  components:{YearRatingForm, SnackBar},
   data:() => ({
     semestr_first:null,
     semester_second:null,
@@ -64,12 +67,16 @@ export default {
     this.yearRating()
   },
   methods:{
+    ...mapActions(['actionOpenSnack']),
     postRating(data){
+      console.log(data)
       http.post('/methodist/rating/', data)
         .then(response => {
           this.index++
           console.log(response)
           this.ratings.push(response.data)
+          const info = {'text':'Оцінка добавлена', 'color':'green'}
+          this.actionOpenSnack(info)
         })
         .catch(error => {
           console.log(error)
@@ -79,6 +86,8 @@ export default {
       http.put(`/methodist/rating/${data.id}/`, data)
           .then(response => {
             console.log(response)
+            const info = {'text':'Оцінка відредагована', 'color':'orange'}
+            this.actionOpenSnack(info)
           })
           .catch(error => {
             console.log(error)

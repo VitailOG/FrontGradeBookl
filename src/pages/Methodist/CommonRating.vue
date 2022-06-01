@@ -76,7 +76,7 @@
             <td>{{ row.item.user.first_name }}</td>
             <td>{{ row.item.user.surname }}</td>
             <td>{{ row.item.form_education }}</td>
-            <td>{{ row.item.total_count ? row.item.total_sum / row.item.total_count : 'Оцінка відсутня' }}</td>
+            <td>{{ row.item.total_count ? String(row.item.total_sum / row.item.total_count).slice(0, 4) : 'Оцінка відсутня' }}</td>
           </tr>
           <tr v-if="opened.includes(row.item.user.id)">
             <td colspan="12">

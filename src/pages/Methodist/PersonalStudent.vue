@@ -80,25 +80,25 @@
               </template>
             </v-data-table>
             <v-divider></v-divider>
-            <tr style="float: right; margin-right: 95px; margin-top: 10px; margin-bottom: 10px;">
-              <td>Загальний бал {{  String(total_rating).split('.').map(e => e.slice(0, 2)).join('.') }}</td>
+            <tr style="float: right; margin-right: 70px; margin-top: 10px; margin-bottom: 10px;">
+              <td>Загальний бал {{ total_rating }}</td>
             </tr>
           </v-tab-item>
           <v-tab-item>
-<!--            переробити-->
+            <!--            переробити-->
             <v-data-table
                 hide-default-footer
                 :headers="headers"
-                :items="yearRatingList"
+                :items="listPersonalData"
                 :key="index"
             >
               <template v-slot:item="row">
-                <tr>
+                <tr v-if="!(row.item.form_of_control === 'Курсова' || row.item.form_of_control === 'Практика')">
                   <td>{{ row.item.name_subject }}</td>
-                  <td>{{ row.item.rating_set[0].rating_5 ? row.item.rating_set[0].rating_5 : '-' }}</td>
-                  <td>{{ row.item.rating_set[0].rating_12 ? row.item.rating_set[0].rating_12 : '-' }}</td>
-                  <td>
-                    <span v-if="row.item.rating_set[0].credited">
+                  <td>{{ row.item.rating_set.length > 1 ? row.item.rating_set[1].rating_5 : '-' }}</td>
+                  <td>{{ row.item.rating_set.length > 1 && row.item.rating_set[1].rating_12 ? row.item.rating_set[1].rating_12 : '-' }}</td>
+                  <td v-if="row.item.rating_set.length > 1">
+                    <span v-if="row.item.rating_set[1].retransmission">
                       <v-icon color="green">
                         mdi-checkbox-marked-circle
                       </v-icon>
@@ -109,8 +109,9 @@
                       </v-icon>
                     </span>
                   </td>
-                  <td>
-                    <span v-if="row.item.rating_set[0].retransmission">
+                  <td v-else>-</td>
+                  <td v-if="row.item.rating_set.length > 1">
+                    <span v-if="row.item.rating_set[1].credited">
                       <v-icon color="green">
                         mdi-checkbox-marked-circle
                       </v-icon>
@@ -121,47 +122,12 @@
                       </v-icon>
                     </span>
                   </td>
-                  <td>{{ row.item.rating_set[0].date_rating }}</td>
+                  <td v-else>-</td>
+                  <td>{{ row.item.rating_set.length > 1 ? row.item.rating_set[1].date_rating : '-' }}</td>
                   <td>{{ row.item.form_of_control }}</td>
-                  <td>{{ row.item.rating_set[0].teacher.fio }}</td>
+                  <td>{{ row.item.rating_set.length > 1 ? row.item.rating_set[1].teacher.fio : '-' }}</td>
                 </tr>
               </template>
-<!--              <template v-slot:item="row">-->
-<!--                <tr v-if="!(row.item.form_of_control === 'Курсова' || row.item.form_of_control === 'Практика')">-->
-<!--                  <td>{{ row.item.name_subject }}</td>-->
-<!--                  <td>{{ row.item.rating_set.length > 1 ? row.item.rating_set[1].rating_5 : '-' }}</td>-->
-<!--                  <td>{{ row.item.rating_set.length > 1 && row.item.rating_set[1].rating_12 ? row.item.rating_set[1].rating_12 : '-' }}</td>-->
-<!--                  <td v-if="row.item.rating_set.length > 1">-->
-<!--                    <span v-if="row.item.rating_set[1].retransmission">-->
-<!--                      <v-icon color="green">-->
-<!--                        mdi-checkbox-marked-circle-->
-<!--                      </v-icon>-->
-<!--                    </span>-->
-<!--                    <span v-else>-->
-<!--                      <v-icon color="red">-->
-<!--                        mdi-cancel-->
-<!--                      </v-icon>-->
-<!--                    </span>-->
-<!--                  </td>-->
-<!--                  <td v-else>-</td>-->
-<!--                  <td v-if="row.item.rating_set.length > 1">-->
-<!--                    <span v-if="row.item.rating_set[1].credited">-->
-<!--                      <v-icon color="green">-->
-<!--                        mdi-checkbox-marked-circle-->
-<!--                      </v-icon>-->
-<!--                    </span>-->
-<!--                    <span v-else>-->
-<!--                      <v-icon color="red">-->
-<!--                        mdi-cancel-->
-<!--                      </v-icon>-->
-<!--                    </span>-->
-<!--                  </td>-->
-<!--                  <td v-else>-</td>-->
-<!--                  <td>{{ row.item.form_of_control }}</td>-->
-<!--                  <td>{{ row.item.rating_set.length > 1 ? row.item.rating_set[1].date_rating : '-' }}</td>-->
-<!--                  <td>{{ row.item.rating_set.length > 1 ? row.item.rating_set[1].teacher.fio : '-' }}</td>-->
-<!--                </tr>-->
-<!--              </template>-->
               <template v-slot:no-data>
                 <p>Поки немає даних</p>
               </template>
@@ -169,9 +135,9 @@
           </v-tab-item>
           <v-tab-item>
             <v-data-table
-              :items="extra_data"
-              :headers="headersForExtra"
-              hide-default-footer
+                :items="extra_data"
+                :headers="headersForExtra"
+                hide-default-footer
             >
               <template v-slot:item="row">
                 <tr>
@@ -246,22 +212,21 @@ export default {
             this.index++
             this.extra_data = response.data.extra_points
             this.total_rating = response.data.total_rating
-            // this.listPersonalData = response.data.ratings
-            response.data.ratings.map(i => {
-              console.log(i)
-              i.rating_set.map(j => {
-                if (!j.is_annual_assessment){
-                  this.listPersonalData.push(i)
-                }
-              })
-            })
-            response.data.ratings.map(i => {
-              i.rating_set.map(j => {
-                if (j.is_annual_assessment && (i.form_of_control === 'Залік' || i.form_of_control === 'Екзамен')){
-                  this.yearRatingList.push(i)
-                }
-              })
-            })
+            this.listPersonalData = response.data.ratings
+            // response.data.ratings.map(i => {
+            //   i.rating_set.map(j => {
+            //     if (!j.is_annual){
+            //       this.listPersonalData.push(i)
+            //     }
+            //   })
+            // })
+            // response.data.ratings.map(i => {
+            //   i.rating_set.map(j => {
+            //     if (j.is_annual){
+            //       this.yearRatingList.push(i)
+            //     }
+            //   })
+            // })
           })
           .catch(error => {
             console.log(error)

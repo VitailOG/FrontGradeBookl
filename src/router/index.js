@@ -9,7 +9,12 @@ const routes = [
   {
     path:'/',
     name:'login',
-    component: Login
+    component: Login,
+    meta:{
+      beforeEach(to, from, next){
+        console.log(to, from, next)
+      }
+    }
   },
   {
     path:'/without-group',
@@ -84,5 +89,6 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
 
 export default router

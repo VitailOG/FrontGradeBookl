@@ -18,6 +18,7 @@
 import {mapActions} from 'vuex'
 
 import axios from 'axios'
+
 import SnackBar from "../../components/Common/UI/SnackBar";
 import LoginForm from "../../components/Login/LoginForm";
 
@@ -35,20 +36,36 @@ export default {
         username: data.username,
         password: data.password
       }
-      axios.post('http://192.168.0.103:8000/auth/api/token/', dataLogin)
+      const obj = new FormData()
+      obj.append('username', data.username)
+      obj.append('password', data.password)
+
+      axios.post('/auth/api/token/', obj)
+      // axios.post('/api-token-auth/', dataLogin)
         .then(response => {
-          if (response.data.status_code === 401){
-            const info = {'text':response.data.message, 'color':'red'}
-            this.actionOpenSnack(info)
-          }
+          // localStorage.setItem('token', response.data.token)
+          // localStorage.setItem('permission', response.data.permission)
           localStorage.setItem('refresh', response.data.refresh)
           localStorage.setItem('access', response.data.access)
           localStorage.setItem('permission', response.data.permission)
-          if (response.data.permission === 'Студент'){
-            this.$router.push(`/personal/student/${response.data.student_id}/`)
-          } else if(response.data.permission === 'Методист'){
+          if (response.data.permission === 'Методист'){
             this.$router.push('/subjects')
+          } else {
+            this.$router.push(`/personal/student/${response.data.student_id}/`)
           }
+          // console.log(response.data)
+          // if (response.data.status_code === 401){
+          //   const info = {'text':response.data.message, 'color':'red'}
+          //   this.actionOpenSnack(info)
+          // }
+          // localStorage.setItem('refresh', response.data.refresh)
+          // localStorage.setItem('access', response.data.access)
+          // localStorage.setItem('permission', response.data.permission)
+          // if (response.data.permission === 'Студент'){
+          //   this.$router.push(`/personal/student/${response.data.student_id}/`)
+          // } else if(response.data.permission === 'Методист'){
+          // }
+
         })
         .catch(error => {
           console.log(error)

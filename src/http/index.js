@@ -10,34 +10,37 @@ const http = axios.create({
 })
 
 http.interceptors.request.use((config) => {
-    console.log(config)
     if (localStorage.getItem('access')) {
+    // if (localStorage.getItem('token')) {
+        // todo
+        // config.headers.Authorization = `Token ${localStorage.getItem('token')}`
+
         config.headers.Authorization = `Bearer ${localStorage.getItem('access')}`
     }
     return config;
 })
 
-http.interceptors.response.use((config) => {
-        return config;
-    }, async (error) => {
-        if (error.response.status === 401){
-            try{
-                await axios.post('/auth/api/token/refresh/',
-                    {refresh:localStorage.getItem('refresh')},
-                    {withCredentials:true}
-                )
-                    .then(response => {
-                        localStorage.setItem('access', response.data.access)
-                    })
-                return http.request(error.config)
-            } catch (e) {
-                localStorage.removeItem('access')
-                localStorage.removeItem('refresh')
-                localStorage.removeItem('permission')
-                router.push('/')
-            }
-        }
-    }
-)
+// http.interceptors.response.use((config) => {
+//         return config;
+//     }, async (error) => {
+//         if (error.response.status === 401){
+//             try{
+//                 await axios.post('/auth/api/token/refresh/',
+//                     {refresh:localStorage.getItem('refresh')},
+//                     {withCredentials:true}
+//                 )
+//                     .then(response => {
+//                         localStorage.setItem('access', response.data.access)
+//                     })
+//                 return http.request(error.config)
+//             } catch (e) {
+//                 localStorage.removeItem('access')
+//                 localStorage.removeItem('refresh')
+//                 localStorage.removeItem('permission')
+//                 router.push('/')
+//             }
+//         }
+//     }
+// )
 
 export default http

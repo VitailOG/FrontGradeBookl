@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    <!-- модальне вікно для створенн   -->
     <v-dialog
         v-model="dialog"
         persistent
@@ -74,6 +75,7 @@
       </v-card>
     </v-dialog>
     <h1 class="black--text mt-3" align="center">Без групи</h1>
+    <!-- таблиця виводу   -->
     <v-data-table
       hide-default-footer
       :headers="headers"
@@ -116,10 +118,10 @@ export default {
     listStudent:[],
     loading:false,
     menu:false,
-    formEductions:['Контрактна', 'Державна'],
-    formEduction:'',
-    formGroup:'',
-    formProgram:'',
+    formEductions: ['Контрактна', 'Державна'],
+    formEduction: '',
+    formGroup: '',
+    formProgram:  '',
     date:'',
     headers:[
       {text:'ID', value:'id', sortable:false},
@@ -171,6 +173,7 @@ export default {
       this.formEduction = ''
       this.formGroup = ''
       this.formProgram = ''
+      this.date = ''
       this.dialog = false
     },
     getStudent(){

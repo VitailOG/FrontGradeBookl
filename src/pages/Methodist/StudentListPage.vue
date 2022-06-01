@@ -460,12 +460,9 @@ export default {
       console.log('data -> ', data)
     },
     changeItems(limit){
-      // this.itemsPerPage = limit
-      // this.page=0
-      localStorage.setItem('limit', limit)
-      localStorage.setItem('currentPage', 0)
+      localStorage.setItem('limitStudent', limit)
+      localStorage.setItem('currentPageStudent', 0)
       this.getStudent()
-      // this.getListSubject(0)
     },
     openChangeModel(id, group, form_education, form_control, year_entry){
       this.dialogChange = true
@@ -511,8 +508,8 @@ export default {
     },
     getStudent(){
       this.loading = true
-      this.itemsPerPage = parseInt(localStorage.getItem('limit')) ||  5
-      this.page = parseInt(localStorage.getItem('currentPage')) ||  0
+      this.itemsPerPage = parseInt(localStorage.getItem('limitStudent')) ||  5
+      this.page = parseInt(localStorage.getItem('currentPageStudent')) ||  0
       http.get(`/methodist/student/?offset=${this.page}&limit=${this.itemsPerPage}`, {params:{
           // first_name: this.filterData.first_name,
           // last_name: this.filterData.last_name,
@@ -532,6 +529,7 @@ export default {
           ordering:this.sortBy
         }})
         .then(response => {
+          console.log(response.data)
           this.allCount = response.data.count
           this.listStudent = response.data.results
           this.loading = false
@@ -609,7 +607,8 @@ export default {
       }
     },
     page(val){
-      localStorage.setItem('currentPage', val)
+      console.log(val)
+      localStorage.setItem('currentPageStudent', val)
       this.getStudent(val)
     },
     sortDesc(val){
